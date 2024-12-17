@@ -6,15 +6,38 @@
       "use": "@vercel/node"
     },
     {
-      "src": "public/**/*",
+      "src": "public/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
-    { "src": "/config", "dest": "/server.js" },
-    { "src": "/images", "dest": "/server.js" },
-    { "src": "/exif/(.*)", "dest": "/server.js" },
-    { "src": "/thumbnails/(.*)", "dest": "/server.js" },
-    { "src": "/(.*)", "dest": "/public/$1" }
-  ]
+    {
+      "src": "/images",
+      "dest": "server.js"
+    },
+    {
+      "src": "/config",
+      "dest": "server.js"
+    },
+    {
+      "src": "/exif/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ],
+  "env": {
+    "R2_ENDPOINT": "@r2_endpoint",
+    "R2_ACCESS_KEY_ID": "@r2_access_key_id",
+    "R2_SECRET_ACCESS_KEY": "@r2_secret_access_key",
+    "R2_BUCKET_NAME": "@r2_bucket_name",
+    "R2_IMAGE_BASE_URL": "@r2_image_base_url",
+    "R2_IMAGE_DIR": "@r2_image_dir",
+    "IMAGE_COMPRESSION_QUALITY": "@image_compression_quality"
+  }
 }

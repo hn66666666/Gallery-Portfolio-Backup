@@ -11,13 +11,13 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const s3Client = new S3Client({
-  region: process.env.R2_REGION,
+  region: 'us-east-1',
   endpoint: process.env.R2_ENDPOINT,
   credentials: {
     accessKeyId: process.env.R2_ACCESS_KEY_ID,
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
   },
-  tls: true,
+  forcePathStyle: true,
 });
 
 const BUCKET_NAME = process.env.R2_BUCKET_NAME;
