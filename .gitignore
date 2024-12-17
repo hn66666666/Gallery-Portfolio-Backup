@@ -1,4 +1,7 @@
-node_modules
+node_modules/
 .env
 draft.md
 package-lock.json
+.DS_Store
+test-img-operation/
+test-s3-api/
