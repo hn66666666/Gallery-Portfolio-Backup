@@ -218,12 +218,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function distributeImages() {
+            if (!Array.isArray(imageUrls)) {
+                console.error('imageUrls is not an array:', imageUrls);
+                return;
+            }
+            
             columnElements.forEach(column => column.innerHTML = '');
-            imageUrls.slice(0, currentIndex).forEach((imageUrl, index) => {
+            const imagesToShow = imageUrls.slice(0, currentIndex);
+            console.log(`Distributing ${imagesToShow.length} images`);
+            
+            imagesToShow.forEach((imageUrl, index) => {
+                if (!imageUrl || !imageUrl.thumbnail) {
+                    console.error('Invalid image URL at index', index, imageUrl);
+                    return;
+                }
                 const img = document.createElement('img');
                 img.src = imageUrl.thumbnail;
                 img.alt = `Photo ${index + 1}`;
-                img.classList.add('loaded'); // Assume images are loaded after initial load
+                img.classList.add('loaded');
                 img.onclick = () => openModal(imageUrl.original, index);
                 columnElements[index % columns].appendChild(img);
             });
@@ -231,24 +243,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 从服务器获取所有图片 URL
         fetch('/images')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.details || 'Failed to load images');
+                    });
+                }
+                return response.json();
+            })
             .then(urls => {
+                console.log('Received image URLs:', urls);
+                if (!Array.isArray(urls)) {
+                    console.error('Received non-array response:', urls);
+                    return;
+                }
                 allImageUrls = urls;
                 imageUrls = urls;
-                generateCategories(); // 自动生成分类导航
+                generateCategories();
                 updateColumns();
                 loadNextImages();
-                
-                // 初始化时显示所有图片
-                const diyLink = document.getElementById('diy-link');
-                const subNav = document.getElementById('category-nav');
-                if (diyLink && subNav) {
-                    diyLink.classList.add('active');
-                    subNav.classList.add('show');
-                    setGalleryMarginTop();
-                }
             })
-            .catch(error => console.error('Error loading images:', error));
+            .catch(error => {
+                console.error('Error loading images:', error);
+                // 显示错误信息给用户
+                const gallery = document.getElementById('gallery');
+                gallery.innerHTML = `<div class="error-message">Failed to load images: ${error.message}</div>`;
+            });
 
         // 取最短列的索引
         function getShortestColumn() {

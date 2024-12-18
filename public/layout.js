@@ -1,27 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
 
     function setTheme(theme) {
+        const body = document.body;
+        if (!themeToggle) return;
+
         if (theme === 'dark') {
-            document.body.classList.add('dark');
-            themeIcon.src = '/assets/brightness_7.svg'; // 日间图标
+            body.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
         } else {
-            document.body.classList.remove('dark');
-            themeIcon.src = '/assets/brightness_4.svg'; // 夜间图标
+            body.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
         }
     }
 
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-    });
-
-    // 初始化主题
+    // Check for saved theme preference
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
+
+    // Theme toggle button click handler
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark');
+            setTheme(isDark ? 'light' : 'dark');
+        });
+    }
 
     // Add footer dynamically
     const footer = document.createElement('footer');
