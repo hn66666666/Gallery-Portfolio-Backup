@@ -89,12 +89,10 @@ async function getExifData(key) {
   };
 }
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 app.use(express.static('public', {
-  index: false
+  index: 'index.html',
+  extensions: ['html'],
+  maxAge: '1h'
 }));
 
 app.get('/images', async (req, res) => {
@@ -160,6 +158,14 @@ app.get('/exif/:key', async (req, res) => {
 
 app.get('/config', (req, res) => {
   res.json({ IMAGE_BASE_URL: process.env.R2_IMAGE_BASE_URL });
+});
+
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: err.message
+  });
 });
 
 app.listen(port, () => {
