@@ -12,24 +12,19 @@
   ],
   "routes": [
     {
-      "src": "^/$",
-      "dest": "server.js"
-    },
-    {
       "src": "/images",
-      "dest": "server.js"
+      "dest": "/server.js"
     },
     {
       "src": "/config",
-      "dest": "server.js"
+      "dest": "/server.js"
     },
     {
       "src": "/exif/(.*)",
-      "dest": "server.js"
+      "dest": "/server.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "handle": "filesystem"
     }
   ]
 }
