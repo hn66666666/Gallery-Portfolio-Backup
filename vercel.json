@@ -25,15 +25,23 @@
     },
     {
       "src": "^/$",
-      "dest": "/public/index.html"
+      "dest": "/index.html"
     },
     {
-      "src": "/about",
-      "dest": "/public/about.html"
+      "src": "^/about$",
+      "dest": "/about.html"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "^/(.*)\\.(?:js|css|svg|ico)$",
+      "dest": "/$1.$2"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/404.html"
     }
   ]
 }
