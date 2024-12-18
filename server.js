@@ -92,7 +92,22 @@ app.use(express.static('public'));
 
 app.get('/images', async (req, res) => {
   try {
-    const images = await s3Client.send(new ListObjectsCommand({ Bucket: BUCKET_NAME, Prefix: IMAGE_DIR }));
+    console.log('Attempting to list objects from R2...');
+    console.log('Using bucket:', BUCKET_NAME);
+    console.log('Using prefix:', IMAGE_DIR);
+    
+    const images = await s3Client.send(new ListObjectsCommand({ 
+      Bucket: BUCKET_NAME, 
+      Prefix: IMAGE_DIR 
+    }));
+    
+    if (!images.Contents) {
+      console.log('No images found in bucket');
+      return res.json([]);
+    }
+
+    console.log(`Found ${images.Contents.length} objects`);
+    
     const imageUrls = await Promise.all(images.Contents.map(async (item) => {
       const itemExtension = path.extname(item.Key).toLowerCase();
       const isFile = item.Key.split('/').length === 2;
@@ -105,10 +120,23 @@ app.get('/images', async (req, res) => {
         thumbnail: `${IMAGE_BASE_URL}/${thumbnailKey}`,
       };
     }));
-    res.json(imageUrls.filter(url => url !== null));
+    
+    const filteredUrls = imageUrls.filter(url => url !== null);
+    console.log(`Returning ${filteredUrls.length} image URLs`);
+    res.json(filteredUrls);
   } catch (error) {
     console.error('Error loading images:', error);
-    res.status(500).send('Error loading images');
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      requestId: error.$metadata?.requestId,
+      cfRay: error.$metadata?.cfRay
+    });
+    res.status(500).json({
+      error: 'Error loading images',
+      details: error.message,
+      code: error.code
+    });
   }
 });
 
