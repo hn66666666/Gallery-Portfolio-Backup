@@ -4,6 +4,7 @@ const sharp = require('sharp');
 const dotenv = require('dotenv');
 const path = require('path');
 const exifParser = require('exif-parser');
+const fs = require('fs');
 
 dotenv.config();
 
@@ -88,7 +89,13 @@ async function getExifData(key) {
   };
 }
 
-app.use(express.static('public'));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.use(express.static('public', {
+  index: false
+}));
 
 app.get('/images', async (req, res) => {
   try {
