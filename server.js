@@ -89,9 +89,12 @@ async function getExifData(key) {
   };
 }
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.use(express.static('public', {
-  index: 'index.html',
-  extensions: ['html'],
+  index: false,
   maxAge: '1h'
 }));
 
@@ -166,6 +169,10 @@ app.use((err, req, res, next) => {
     error: 'Internal Server Error',
     message: err.message
   });
+});
+
+app.use('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(port, () => {
